@@ -1,0 +1,53 @@
+.order-summary {
+  background-color: #4b3aa8;
+  color: white;
+  padding: 20px;
+  border-radius: 15px;
+  width: 300px;
+}
+
+.summary-line {
+  display: flex;
+  justify-content: space-between;
+  margin: 10px 0;
+}
+
+.total {
+  font-weight: bold;
+  border-top: 1px solid #eee;
+  padding-top: 10px;
+}
+
+.promo-code {
+  display: flex;
+  margin-top: 20px;
+}
+
+.promo-code input {
+  flex: 1;
+  padding: 5px;
+  border-radius: 5px 0 0 5px;
+  border: none;
+}
+
+.promo-code button {
+  background: #9d33a1;
+  border: none;
+  color: white;
+  padding: 0 15px;
+  border-radius: 0 5px 5px 0;
+  cursor: pointer;
+}
+
+.checkout-btn {
+  background-color: #9d33a1;
+  border: none;
+  margin-top: 20px;
+  width: 100%;
+  padding: 15px;
+  border-radius: 10px;
+  color: white;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+}
