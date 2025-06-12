@@ -12,15 +12,21 @@ export const ROUTES = {
 }
 
 export const PROMO_CODES = {
-  WELCOME10: { code: "WELCOME10", discount: 10 },
-  CASHEW20: { code: "CASHEW20", discount: 20 },
+  [import.meta.env.VITE_PROMO_CODE_WELCOME]: { 
+    code: import.meta.env.VITE_PROMO_CODE_WELCOME, 
+    discount: Number(import.meta.env.VITE_PROMO_DISCOUNT_WELCOME) 
+  },
+  [import.meta.env.VITE_PROMO_CODE_CASHEW]: { 
+    code: import.meta.env.VITE_PROMO_CODE_CASHEW, 
+    discount: Number(import.meta.env.VITE_PROMO_DISCOUNT_CASHEW) 
+  },
 }
 
 export const SHIPPING_COST = 4
 
 export const CONTACT_INFO = {
   phone: "+94 778042144",
-  whatsapp: "+94 778042144", // Without + for WhatsApp
+  whatsapp: "+94 778042144",
   email: "kirushnabalan1803@gmail.com",
   location: "Sri Lanka"
 }
