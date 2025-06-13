@@ -1,7 +1,7 @@
-import { useState } from "react"
+import { useState, useContext, useEffect } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { ArrowLeft, Plus, Minus, Trash2 } from "lucide-react"
-import { useCart } from "@context/CartContext"
+import { CartContext } from "@context/CartContext"
 import { formatCurrency, calculateDiscount } from "@utils/helpers"
 import { ROUTES, PROMO_CODES } from "@constants"
 import Button from "@components/ui/Button"
@@ -10,11 +10,27 @@ import "./CartPage.css"
 
 const CartPage = () => {
   const navigate = useNavigate()
-  const { cart, updateQuantity, removeFromCart, getCartTotal, getShippingCost } = useCart()
+  const { 
+    cart,          // Change cartItems to cart
+    draftItems, 
+    clearDraftItems,
+    getCartTotal,
+    getShippingCost,
+    updateQuantity,
+    removeFromCart 
+  } = useContext(CartContext)
+  
   const [promoCode, setPromoCode] = useState("")
   const [discount, setDiscount] = useState(0)
   const [promoError, setPromoError] = useState("")
   const [promoSuccess, setPromoSuccess] = useState("")
+
+  useEffect(() => {
+    // Clear draft items when component unmounts
+    return () => clearDraftItems()
+  }, [])
+
+  const itemsToDisplay = draftItems || cart // Change cartItems to cart
 
   const subtotal = getCartTotal()
   const shipping = getShippingCost()
@@ -39,7 +55,8 @@ const CartPage = () => {
     navigate(ROUTES.CHECKOUT)
   }
 
-  if (cart.length === 0) {
+  // Check if cart is empty - fixed null check
+  if (cart.length === 0 && !draftItems) { // Change cartItems to cart
     return (
       <div className="cart-page">
         <div className="container">
@@ -64,12 +81,18 @@ const CartPage = () => {
             Continue Shopping
           </Link>
           <h1 className="page-title">Shopping Cart</h1>
-          <p className="cart-count">You have {cart.length} items in your cart</p>
+          <p className="cart-count">You have {itemsToDisplay.length} items in your cart</p>
         </div>
 
         <div className="cart-content">
+          {draftItems && (
+            <div className="draft-notice">
+              <p>Showing items from checkout draft</p>
+            </div>
+          )}
+
           <div className="cart-items">
-            {cart.map((item) => (
+            {itemsToDisplay.map((item) => (
               <Card key={item._id} className="cart-item">
                 <div className="item-image">
                   <img src={item.image || "/placeholder.svg"} alt={item.name} />

@@ -1,6 +1,7 @@
-import { useState } from "react"
-import { useNavigate, Link } from "react-router-dom" // Add Link import
+import { useState, useContext } from "react"
+import { useNavigate } from "react-router-dom"
 import { ArrowLeft } from "lucide-react"
+import { CartContext } from "@context/CartContext"
 import { useCart } from "@context/CartContext"
 import { formatCurrency, isValidEmail, isValidPhone } from "@utils/helpers"
 import { ROUTES } from "@constants"
@@ -13,6 +14,7 @@ import "./CheckoutPage.css"
 const CheckoutPage = () => {
   const navigate = useNavigate()
   const { cart, clearCart, getCartTotal, getShippingCost } = useCart()
+  const { saveDraftItems } = useContext(CartContext)
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState({})
 
@@ -99,6 +101,11 @@ const CheckoutPage = () => {
     }
   }
 
+  const handleBackToCart = () => {
+    saveDraftItems()
+    navigate(ROUTES.CART)
+  }
+
   if (cart.length === 0) {
     return (
       <div className="checkout-page">
@@ -119,10 +126,10 @@ const CheckoutPage = () => {
     <div className="checkout-page">
       <div className="container">
         <div className="checkout-header">
-          <a href={ROUTES.CART} className="back-link">
+          <button onClick={handleBackToCart} className="back-link">
             <ArrowLeft size={20} />
             Back to Cart
-          </a>
+          </button>
           <h1 className="page-title">Checkout</h1>
         </div>
 

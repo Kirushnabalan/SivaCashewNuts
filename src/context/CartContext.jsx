@@ -1,8 +1,8 @@
-import { createContext, useContext, useReducer, useEffect } from "react"
+import { createContext, useState, useContext, useEffect, useReducer } from "react"
 import { storage } from "@utils/helpers"
 import { SHIPPING_COST } from "@constants"
 
-const CartContext = createContext(null)
+export const CartContext = createContext(null)
 
 // Cart reducer
 const cartReducer = (state, action) => {
@@ -48,6 +48,7 @@ export const useCart = () => {
 
 export const CartProvider = ({ children }) => {
   const [cart, dispatch] = useReducer(cartReducer, [])
+  const [draftItems, setDraftItems] = useState(null)
 
   // Load cart from localStorage on mount
   useEffect(() => {
@@ -88,6 +89,14 @@ export const CartProvider = ({ children }) => {
     return cart.length > 0 ? SHIPPING_COST : 0
   }
 
+  const saveDraftItems = () => {
+    setDraftItems([...cart])
+  }
+
+  const clearDraftItems = () => {
+    setDraftItems(null)
+  }
+
   const value = {
     cart,
     addToCart,
@@ -97,6 +106,9 @@ export const CartProvider = ({ children }) => {
     getCartTotal,
     getCartItemCount,
     getShippingCost,
+    draftItems,
+    saveDraftItems,
+    clearDraftItems,
   }
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>
