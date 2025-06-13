@@ -85,23 +85,21 @@ const CheckoutPage = () => {
         paymentMethod: "COD",
       }
 
-      // Make sure VITE_API_BASE_URL is defined
-      const apiUrl = import.meta.env.VITE_API_BASE_URL
-      if (!apiUrl) {
-        throw new Error("API URL not configured")
-      }
+      // Get base URL from environment variable
+      const apiUrl = import.meta.env.VITE_API_BASE_URL?.replace(/\/+$/, '') || 'http://localhost:5000/api'
 
       const response = await fetch(`${apiUrl}/email/send-order-email`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: 'include', // Add this line
         body: JSON.stringify(orderData),
       })
 
       if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.message || "Failed to place order")
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.message || `Server error: ${response.status}`)
       }
 
       // Clear cart and redirect on success
@@ -110,7 +108,7 @@ const CheckoutPage = () => {
     } catch (error) {
       console.error("Error placing order:", error)
       setErrors({
-        submit: error.message || "Failed to place order. Please try again or contact support.",
+        submit: "Failed to place order. Please check your connection and try again.",
       })
     } finally {
       setLoading(false)

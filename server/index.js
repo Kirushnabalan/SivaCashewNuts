@@ -15,10 +15,8 @@ const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors({
-  origin: ["http://localhost:5173", "http://localhost:5174"], // Allow both ports
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Add explicit methods
-  allowedHeaders: ['Content-Type', 'Authorization'] // Add allowed headers
+  origin: process.env.CLIENT_URL || "http://localhost:5174",
+  credentials: true
 }));
 
 app.use(express.json({ limit: "10mb" }));

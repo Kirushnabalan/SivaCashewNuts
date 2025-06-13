@@ -1,21 +1,25 @@
 import nodemailer from "nodemailer"
 
 export const createEmailTransporter = () => {
-  if (!process.env.MAIL_USER || !process.env.MAIL_PASS) {
-    throw new Error("Email configuration missing. Please set MAIL_USER and MAIL_PASS environment variables.")
+  const { MAIL_USER, MAIL_PASS } = process.env;
+  
+  if (!MAIL_USER || !MAIL_PASS) {
+    throw new Error("Email configuration missing. Please set MAIL_USER and MAIL_PASS environment variables.");
   }
 
   return nodemailer.createTransport({
-    service: "gmail",
+    host: process.env.MAIL_HOST || 'smtp.gmail.com',
+    port: process.env.MAIL_PORT || 587,
+    secure: false,
     auth: {
-      user: process.env.MAIL_USER,
-      pass: process.env.MAIL_PASS,
+      user: MAIL_USER,
+      pass: MAIL_PASS,
     },
     tls: {
       rejectUnauthorized: false,
     },
-  })
-}
+  });
+};
 
 export const emailTemplates = {
   orderConfirmation: (orderDetails) => ({

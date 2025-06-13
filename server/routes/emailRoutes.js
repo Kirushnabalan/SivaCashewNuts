@@ -3,17 +3,17 @@ import { createEmailTransporter, emailTemplates } from "../config/email.js"
 
 const router = express.Router()
 
-router.post("/send-order-email", async (req, res) => {
+router.post('/send-order-email', async (req, res) => {
   try {
-    // Validate order details
-    if (!req.body || !req.body.customer || !req.body.items) {
+    const orderDetails = req.body;
+    
+    if (!orderDetails || !orderDetails.customer || !orderDetails.items) {
       return res.status(400).json({
         success: false,
         message: "Invalid order details"
       });
     }
 
-    const orderDetails = req.body;
     const transporter = createEmailTransporter();
     const template = emailTemplates.orderConfirmation(orderDetails);
 
