@@ -85,23 +85,21 @@ const CheckoutPage = () => {
         paymentMethod: "COD",
       }
 
-      // Fix the API endpoint URL
-      const response = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}/email/send-order-email`, // Remove extra /api/
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(orderData),
-        }
-      )
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/email/send-order-email`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(orderData),
+      })
 
       if (!response.ok) {
-        throw new Error("Failed to send order")
+        const errorData = await response.json()
+        throw new Error(errorData.message || "Failed to send order")
       }
 
-      // Clear cart and redirect
+      // Clear cart and redirect on success
       clearCart()
       navigate(ROUTES.SUCCESS)
     } catch (error) {

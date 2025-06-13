@@ -5,20 +5,15 @@ const router = express.Router()
 
 router.post("/send-order-email", async (req, res) => {
   try {
-    // Set CORS headers explicitly
-    res.header('Access-Control-Allow-Origin', process.env.CORS_ORIGIN);
-    res.header('Access-Control-Allow-Credentials', 'true');
-    
-    const orderDetails = req.body;
-    
     // Validate order details
-    if (!orderDetails || !orderDetails.customer || !orderDetails.items) {
-      return res.status(400).json({ 
+    if (!req.body || !req.body.customer || !req.body.items) {
+      return res.status(400).json({
         success: false,
-        message: "Invalid order details" 
+        message: "Invalid order details"
       });
     }
 
+    const orderDetails = req.body;
     const transporter = createEmailTransporter();
     const template = emailTemplates.orderConfirmation(orderDetails);
 
@@ -29,16 +24,16 @@ router.post("/send-order-email", async (req, res) => {
       ...template
     });
     
-    res.status(200).json({ 
+    res.status(200).json({
       success: true,
-      message: "Order email sent successfully" 
+      message: "Order email sent successfully"
     });
   } catch (error) {
     console.error("Email error:", error);
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
       message: "Failed to send order email",
-      error: error.message 
+      error: error.message
     });
   }
 })
