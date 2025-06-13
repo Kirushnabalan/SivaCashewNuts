@@ -1,7 +1,7 @@
-import express from "express"
-import { createEmailTransporter, emailTemplates } from "../config/email.js"
+import express from 'express';
+import { createEmailTransporter, emailTemplates } from '../config/email.js';
 
-const router = express.Router()
+const router = express.Router();
 
 router.post('/send-order-email', async (req, res) => {
   try {
@@ -36,6 +36,6 @@ router.post('/send-order-email', async (req, res) => {
       error: error.message
     });
   }
-})
+});
 
-export default router
+export default router;

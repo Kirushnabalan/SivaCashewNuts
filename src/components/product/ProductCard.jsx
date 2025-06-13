@@ -33,7 +33,14 @@ const ProductCard = ({ product }) => {
   return (
     <Card className="product-card">
       <div className="product-image">
-        <img src={product.image || "/placeholder.svg?height=200&width=200"} alt={product.name} />
+        <img 
+          src={product.image || '/src/assets/chew.png'} // Update fallback image path
+          alt={product.name}
+          onError={(e) => {
+            e.target.onerror = null;
+            e.target.src = '/src/assets/chew.png';
+          }}
+        />
         {!isInStock && <div className="out-of-stock-overlay">Out of Stock</div>}
       </div>
 
