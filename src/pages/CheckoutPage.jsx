@@ -5,7 +5,6 @@ import { CartContext } from "@context/CartContext"
 import { useCart } from "@context/CartContext"
 import { formatCurrency, isValidEmail, isValidPhone } from "@utils/helpers"
 import { ROUTES } from "@constants"
-import apiService from "@services/api"
 import Button from "@components/ui/Button"
 import Input from "@components/ui/Input"
 import Card from "@components/ui/Card"
@@ -86,8 +85,21 @@ const CheckoutPage = () => {
         paymentMethod: "COD",
       }
 
-      // Send order email
-      await apiService.sendOrderEmail(orderData)
+      // Fix the API endpoint URL
+      const response = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/email/send-order-email`, // Remove extra /api/
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(orderData),
+        }
+      )
+
+      if (!response.ok) {
+        throw new Error("Failed to send order")
+      }
 
       // Clear cart and redirect
       clearCart()

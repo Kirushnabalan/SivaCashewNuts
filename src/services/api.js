@@ -47,22 +47,22 @@ const apiService = {
   // Email
   async sendOrderEmail(orderData) {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/email/send-order-email`, {
+      const baseUrl = import.meta.env.VITE_API_BASE_URL.replace(/\/+$/, '');
+      const response = await fetch(`${baseUrl}/email/send-order-email`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify(orderData),
-        credentials: 'include'
       });
 
-      const data = await response.json();
-
       if (!response.ok) {
-        throw new Error(data.message || 'Failed to send order email');
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to send order email');
       }
 
-      return data;
+      return await response.json();
     } catch (error) {
       console.error('API Error:', error);
       throw new Error('Failed to process order. Please try again or contact support.');
