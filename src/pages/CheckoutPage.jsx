@@ -80,12 +80,11 @@ const CheckoutPage = () => {
         subtotal,
         shipping,
         total,
-        totalAmount: total,
         orderDate: new Date().toISOString(),
         paymentMethod: "COD",
       }
 
-      const response = await fetch("/api/email/send-order-email", {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/email/send-order-email`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -93,18 +92,19 @@ const CheckoutPage = () => {
         body: JSON.stringify(orderData),
       })
 
+      const data = await response.json()
+
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}))
-        throw new Error(errorData.message || `Server error: ${response.status}`)
+        throw new Error(data.message || `Server error: ${response.status}`)
       }
 
       // Success
       clearCart()
       navigate(ROUTES.SUCCESS)
     } catch (error) {
-      console.error("Error placing order:", error)
+      console.error("Checkout error:", error)
       setErrors({
-        submit: "Failed to place order. Please try again or contact support.",
+        submit: error.message || "Failed to process order. Please try again.",
       })
     } finally {
       setLoading(false)
