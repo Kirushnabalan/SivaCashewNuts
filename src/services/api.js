@@ -2,7 +2,7 @@ import { API_BASE_URL } from "@constants"
 
 class ApiService {
   constructor() {
-    this.baseURL = API_BASE_URL
+    this.baseURL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api"
   }
 
   async request(endpoint, options = {}) {
@@ -12,6 +12,7 @@ class ApiService {
         "Content-Type": "application/json",
         ...options.headers,
       },
+      credentials: "include",
       ...options,
     }
 
@@ -19,7 +20,8 @@ class ApiService {
       const response = await fetch(url, config)
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
+        const error = await response.json()
+        throw new Error(error.message || `HTTP error! status: ${response.status}`)
       }
 
       return await response.json()

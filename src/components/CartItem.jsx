@@ -1,9 +1,16 @@
 import "./CartItem.css"
+import PlaceholderImage from "./ui/PlaceholderImage"
 
 function CartItem({ product, onQuantityChange, onRemove }) {
   return (
     <div className="cart-item">
-      <img src={product.image || "/placeholder.svg"} alt={product.name} className="cart-item-img" />
+      {product.image ? (
+        <img src={product.image} alt={product.name} className="cart-item-img" />
+      ) : (
+        <div className="cart-item-img">
+          <PlaceholderImage />
+        </div>
+      )}
       <span className="cart-item-name">{product.name}</span>
       <div className="cart-item-qty">
         <button onClick={() => onQuantityChange(product._id, product.quantity - 1)} disabled={product.quantity <= 1}>
