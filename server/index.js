@@ -16,11 +16,13 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 app.use(cors({
   origin: [
-    process.env.CLIENT_URL,
-    "http://localhost:5174",
-    "https://siva-cashew-nuts.vercel.app"
+    'https://siva-cashew-nuts.vercel.app',
+    'http://localhost:5174',
+    'http://localhost:5173'
   ],
-  credentials: true
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 app.use(express.json({ limit: "10mb" }));

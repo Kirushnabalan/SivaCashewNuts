@@ -1,12 +1,8 @@
 import { API_BASE_URL } from "@constants"
 
-class ApiService {
-  constructor() {
-    this.baseURL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api"
-  }
-
+const apiService = {
   async request(endpoint, options = {}) {
-    const url = `${this.baseURL}${endpoint}`
+    const url = `${import.meta.env.VITE_API_BASE_URL}${endpoint}`
     const config = {
       headers: {
         "Content-Type": "application/json",
@@ -29,16 +25,16 @@ class ApiService {
       console.error("API request failed:", error)
       throw error
     }
-  }
+  },
 
   // Products
   async getProducts() {
     return this.request("/products")
-  }
+  },
 
   async getProduct(id) {
     return this.request(`/products/${id}`)
-  }
+  },
 
   // Orders
   async createOrder(orderData) {
@@ -46,15 +42,32 @@ class ApiService {
       method: "POST",
       body: JSON.stringify(orderData),
     })
-  }
+  },
 
   // Email
-  async sendOrderEmail(orderDetails) {
-    return this.request("/email/send-order-email", {
-      method: "POST",
-      body: JSON.stringify({ orderDetails }),
-    })
-  }
+  async sendOrderEmail(orderData) {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/email/send-order-email`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(orderData),
+        credentials: 'include'
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to send order email');
+      }
+
+      return data;
+    } catch (error) {
+      console.error('API Error:', error);
+      throw new Error('Failed to process order. Please try again or contact support.');
+    }
+  },
 
   // Contact
   async sendContactMessage(messageData) {
@@ -65,4 +78,4 @@ class ApiService {
   }
 }
 
-export default new ApiService()
+export default apiService

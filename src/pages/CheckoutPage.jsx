@@ -72,6 +72,7 @@ const CheckoutPage = () => {
     if (!validateForm()) return
 
     setLoading(true)
+    setErrors({})
 
     try {
       const orderData = {
@@ -80,9 +81,9 @@ const CheckoutPage = () => {
         subtotal,
         shipping,
         total,
-        totalAmount: total, // Add this for email template
+        totalAmount: total,
         orderDate: new Date().toISOString(),
-        paymentMethod: "COD", // Add payment method
+        paymentMethod: "COD",
       }
 
       // Send order email
@@ -94,7 +95,7 @@ const CheckoutPage = () => {
     } catch (error) {
       console.error("Error placing order:", error)
       setErrors({
-        submit: "Failed to place order. Please try again or contact support.",
+        submit: error.message || "Failed to place order. Please try again or contact support.",
       })
     } finally {
       setLoading(false)
