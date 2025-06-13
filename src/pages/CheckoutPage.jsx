@@ -67,7 +67,6 @@ const CheckoutPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-
     if (!validateForm()) return
 
     setLoading(true)
@@ -84,8 +83,11 @@ const CheckoutPage = () => {
         paymentMethod: "COD",
       }
 
-      // Use the environment variable for API URL
-      const apiUrl = import.meta.env.VITE_API_BASE_URL
+      const apiUrl = import.meta.env.VITE_API_BASE_URL?.replace(/\/+$/, "")
+      if (!apiUrl) {
+        throw new Error("API URL not configured")
+      }
+
       const response = await fetch(`${apiUrl}/email/send-order-email`, {
         method: "POST",
         headers: {
@@ -95,11 +97,11 @@ const CheckoutPage = () => {
       })
 
       if (!response.ok) {
-        throw new Error(`Server error: ${response.status}`)
+        const errorData = await response.json().catch(() => null)
+        throw new Error(errorData?.message || `Server error: ${response.status}`)
       }
 
-      const data = await response.json()
-
+      await response.json()
       clearCart()
       navigate(ROUTES.SUCCESS)
     } catch (error) {

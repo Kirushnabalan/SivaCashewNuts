@@ -5,6 +5,7 @@ import { useCart } from "@context/CartContext"
 import { formatCurrency } from "@utils/helpers"
 import Button from "@components/ui/Button"
 import Card from "@components/ui/Card"
+import PlaceholderImage from '../ui/PlaceholderImage';
 import "./ProductCard.css"
 const ProductCard = ({ product }) => {
   const [quantity, setQuantity] = useState(1)
@@ -33,14 +34,18 @@ const ProductCard = ({ product }) => {
   return (
     <Card className="product-card">
       <div className="product-image">
-        <img 
-          src={product.image || '/src/assets/chew.png'} // Update fallback image path
-          alt={product.name}
-          onError={(e) => {
-            e.target.onerror = null;
-            e.target.src = '/src/assets/chew.png';
-          }}
-        />
+        {product.image ? (
+          <img 
+            src={product.image}
+            alt={product.name}
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = '/assets/chew.png';
+            }}
+          />
+        ) : (
+          <PlaceholderImage />
+        )}
         {!isInStock && <div className="out-of-stock-overlay">Out of Stock</div>}
       </div>
 
