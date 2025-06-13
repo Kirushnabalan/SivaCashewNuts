@@ -84,7 +84,9 @@ const CheckoutPage = () => {
         paymentMethod: "COD",
       }
 
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/email/send-order-email`, {
+      // Use the environment variable for API URL
+      const apiUrl = import.meta.env.VITE_API_BASE_URL
+      const response = await fetch(`${apiUrl}/email/send-order-email`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -92,19 +94,18 @@ const CheckoutPage = () => {
         body: JSON.stringify(orderData),
       })
 
-      const data = await response.json()
-
       if (!response.ok) {
-        throw new Error(data.message || `Server error: ${response.status}`)
+        throw new Error(`Server error: ${response.status}`)
       }
 
-      // Success
+      const data = await response.json()
+
       clearCart()
       navigate(ROUTES.SUCCESS)
     } catch (error) {
       console.error("Checkout error:", error)
       setErrors({
-        submit: error.message || "Failed to process order. Please try again.",
+        submit: "Failed to process order. Please try again.",
       })
     } finally {
       setLoading(false)

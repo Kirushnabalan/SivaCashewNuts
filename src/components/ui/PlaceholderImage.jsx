@@ -1,9 +1,12 @@
+import React from 'react';
+
 const PlaceholderImage = () => (
   <svg
     width="100%"
     height="100%"
     viewBox="0 0 200 200"
     xmlns="http://www.w3.org/2000/svg"
+    style={{ background: '#f3f4f6' }}
   >
     <rect width="100%" height="100%" fill="#f3f4f6" />
     <path

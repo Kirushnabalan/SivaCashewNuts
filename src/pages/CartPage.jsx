@@ -95,7 +95,11 @@ const CartPage = () => {
             {itemsToDisplay.map((item) => (
               <Card key={item._id} className="cart-item">
                 <div className="item-image">
-                  <img src={item.image || "/placeholder.svg"} alt={item.name} />
+                  {item.image ? (
+                    <img src={item.image} alt={item.name} />
+                  ) : (
+                    <PlaceholderImage />
+                  )}
                 </div>
 
                 <div className="item-details">
