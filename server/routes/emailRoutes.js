@@ -16,20 +16,18 @@ router.post('/send-order-email', async (req, res) => {
 
     const transporter = createEmailTransporter();
 
-    // Email template
     const emailContent = {
       subject: 'Order Confirmation - Siva Cashew Nuts',
       html: `
         <h2>Order Confirmation</h2>
         <p>Dear ${customer.name},</p>
         <p>Thank you for your order!</p>
-        <p>Order Details:</p>
         <ul>
           ${items.map(item => `
             <li>${item.name} x ${item.quantity} - ₹${item.price * item.quantity}</li>
           `).join('')}
         </ul>
-        <p>Total Amount: ₹${total}</p>
+        <p>Total: ₹${total}</p>
         <p>Order Date: ${new Date(orderDate).toLocaleDateString()}</p>
       `
     };
@@ -37,7 +35,7 @@ router.post('/send-order-email', async (req, res) => {
     await transporter.sendMail({
       from: process.env.MAIL_USER,
       to: customer.email,
-      bcc: process.env.MAIL_USER, // Send copy to admin
+      bcc: process.env.MAIL_USER,
       subject: emailContent.subject,
       html: emailContent.html
     });
