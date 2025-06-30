@@ -75,33 +75,10 @@ const CheckoutPage = () => {
     setErrors({})
 
     try {
-      const orderData = {
-        customer: formData,
-        items: cart,
-        subtotal,
-        shipping,
-        total,
-        orderDate: new Date().toISOString(),
-        paymentMethod: "COD",
-      }
+      // Simulate processing time
+      await new Promise((resolve) => setTimeout(resolve, 2000))
 
-      // Use environment variable or fallback to production API
-      const apiUrl = import.meta.env.VITE_API_BASE_URL || "https://your-backend-domain.com/api"
-
-      const response = await fetch(`${apiUrl}/email/send-order-email`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(orderData),
-      })
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => null)
-        throw new Error(errorData?.message || `Server error: ${response.status}`)
-      }
-
-      await response.json()
+      // For now, just clear cart and redirect
       clearCart()
       navigate(ROUTES.SUCCESS)
     } catch (error) {
