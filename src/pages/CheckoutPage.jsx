@@ -1,3 +1,5 @@
+"use client"
+
 import { useState, useContext } from "react"
 import { useNavigate } from "react-router-dom"
 import { ArrowLeft } from "lucide-react"
@@ -83,10 +85,8 @@ const CheckoutPage = () => {
         paymentMethod: "COD",
       }
 
-      const apiUrl = import.meta.env.VITE_API_BASE_URL?.replace(/\/+$/, "")
-      if (!apiUrl) {
-        throw new Error("API URL not configured")
-      }
+      // Use environment variable or fallback to production API
+      const apiUrl = import.meta.env.VITE_API_BASE_URL || "https://your-backend-domain.com/api"
 
       const response = await fetch(`${apiUrl}/email/send-order-email`, {
         method: "POST",
