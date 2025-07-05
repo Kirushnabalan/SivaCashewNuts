@@ -19,6 +19,7 @@ const CheckoutPage = () => {
   const { saveDraftItems } = useContext(CartContext)
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState({})
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -66,41 +67,43 @@ const CheckoutPage = () => {
     return Object.keys(newErrors).length === 0
   }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    if (!validateForm()) return
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    setLoading(true)
-    setErrors({})
+  if (!validateForm()) return;
 
-    const orderData = {
-      customer: formData,
-      items: cart,
-      totalAmount: total,
-    }
+  setLoading(true);
+  setErrors({});
 
-    try {
-      const res = await fetch("https://siva-cashew-nuts.vercel.app/checkout", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(orderData),
-      })
+  const orderData = {
+    customer: formData,
+    items: cart,
+    totalAmount: total,
+    orderDate: new Date().toISOString(), // optional but recommended
+  };
 
-      const data = await res.json()
+  try {
+    const res = await fetch(`${API_BASE_URL}/orders`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(orderData),
+    });
 
-      if (!res.ok) throw new Error(data.message || "Order failed")
+    const data = await res.json();
 
-      clearCart()
-      navigate(ROUTES.SUCCESS)
-    } catch (error) {
-      console.error("Checkout error:", error)
-      setErrors({ submit: error.message })
-    } finally {
-      setLoading(false)
-    }
+    if (!res.ok) throw new Error(data.message || "Order failed");
+
+    clearCart();
+    navigate(ROUTES.SUCCESS);
+  } catch (error) {
+    console.error("Checkout error:", error);
+    setErrors({ submit: error.message });
+  } finally {
+    setLoading(false);
   }
+};
 
   const handleBackToCart = () => {
     saveDraftItems()

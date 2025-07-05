@@ -22,28 +22,27 @@ const PORT = process.env.PORT || 5000;
 
 // CORS Setup
 const allowedOrigins = [
-  process.env.CORS_ORIGIN,
+  process.env.CORS_ORIGIN, // https://siva-cashew-nuts.vercel.app
   "http://localhost:5173",
   "http://localhost:5174",
   "https://siva-cashew-nuts.vercel.app",
   "https://sivacashewnuts2.vercel.app"
 ];
 
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        console.log("Blocked origin:", origin);
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"]
-  })
-);
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.log("Blocked origin:", origin);
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+}));
+
 
 // Middleware
 app.use(express.json());
