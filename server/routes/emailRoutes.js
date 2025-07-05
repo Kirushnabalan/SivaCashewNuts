@@ -1,5 +1,5 @@
 import express from 'express';
-import { createEmailTransporter } from '../config/email.js';
+import { createEmailTransporter } from '../utils/email.js';
 
 const router = express.Router();
 

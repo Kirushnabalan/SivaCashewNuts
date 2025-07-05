@@ -41,6 +41,34 @@
   gap: 1rem;
 }
 
+.form-control {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.form-control label {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: #333;
+}
+
+.form-control select,
+.react-phone-input input {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  width: 100%;
+}
+
+.form-error {
+  color: #e3342f;
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+}
+
 .summary-card {
   position: sticky;
   top: 2rem;
@@ -152,6 +180,26 @@
 .empty-checkout p {
   color: #666;
   margin-bottom: 2rem;
+}
+
+/* Phone input wrapper */
+.react-tel-input {
+  width: 100%;
+}
+
+.react-phone-input input {
+  width: 100%;
+  height: 40px;
+  padding-left: 48px;
+  font-size: 0.875rem;
+  border-radius: 0.375rem;
+}
+
+/* Country select styling */
+.form-control select {
+  height: 40px;
+  background-color: #fff;
+  appearance: none;
 }
 
 @media (max-width: 1024px) {

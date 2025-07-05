@@ -1,15 +1,16 @@
-"use client"
-
 import { useState, useContext } from "react"
 import { useNavigate } from "react-router-dom"
 import { ArrowLeft } from "lucide-react"
 import { CartContext } from "@context/CartContext"
 import { useCart } from "@context/CartContext"
-import { formatCurrency, isValidEmail, isValidPhone } from "@utils/helpers"
+import { formatCurrency, isValidEmail } from "@utils/helpers"
 import { ROUTES } from "@constants"
 import Button from "@components/ui/Button"
 import Input from "@components/ui/Input"
 import Card from "@components/ui/Card"
+import PhoneInput from "react-phone-input-2"
+import "react-phone-input-2/lib/style.css"
+import { getNames } from "country-list"
 import "./CheckoutPage.css"
 
 const CheckoutPage = () => {
@@ -37,8 +38,6 @@ const CheckoutPage = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
-
-    // Clear error when user starts typing
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }))
     }
@@ -56,8 +55,8 @@ const CheckoutPage = () => {
     }
     if (!formData.phone.trim()) {
       newErrors.phone = "Phone number is required"
-    } else if (!isValidPhone(formData.phone)) {
-      newErrors.phone = "Please enter a valid 10-digit phone number"
+    } else if (formData.phone.replace(/\D/g, "").length < 10) {
+      newErrors.phone = "Please enter a valid phone number"
     }
     if (!formData.address.trim()) newErrors.address = "Address is required"
     if (!formData.city.trim()) newErrors.city = "City is required"
@@ -74,18 +73,30 @@ const CheckoutPage = () => {
     setLoading(true)
     setErrors({})
 
-    try {
-      // Simulate processing time
-      await new Promise((resolve) => setTimeout(resolve, 2000))
+    const orderData = {
+      customer: formData,
+      items: cart,
+      totalAmount: total,
+    }
 
-      // For now, just clear cart and redirect
+    try {
+      const res = await fetch("http://localhost:5000/api/orders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(orderData),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) throw new Error(data.message || "Order failed")
+
       clearCart()
       navigate(ROUTES.SUCCESS)
     } catch (error) {
       console.error("Checkout error:", error)
-      setErrors({
-        submit: "Failed to process order. Please try again.",
-      })
+      setErrors({ submit: error.message })
     } finally {
       setLoading(false)
     }
@@ -161,15 +172,26 @@ const CheckoutPage = () => {
                       error={errors.email}
                       required
                     />
-                    <Input
-                      label="Phone"
-                      name="phone"
-                      type="tel"
-                      value={formData.phone}
-                      onChange={handleInputChange}
-                      error={errors.phone}
-                      required
-                    />
+
+                    <div className="form-control">
+                      <label>Phone</label>
+                      <PhoneInput
+                        country={"us"}
+                        value={formData.phone}
+                        onChange={(value, data) => {
+                          setFormData((prev) => ({
+                            ...prev,
+                            phone: value,
+                            country: data?.name || prev.country,
+                          }))
+                          if (errors.phone) {
+                            setErrors((prev) => ({ ...prev, phone: "" }))
+                          }
+                        }}
+                        inputClass="react-phone-input"
+                      />
+                      {errors.phone && <div className="form-error">{errors.phone}</div>}
+                    </div>
                   </div>
 
                   <Input
@@ -199,14 +221,23 @@ const CheckoutPage = () => {
                     />
                   </div>
 
-                  <Input
-                    label="Country"
-                    name="country"
-                    value={formData.country}
-                    onChange={handleInputChange}
-                    error={errors.country}
-                    required
-                  />
+                  <div className="form-control">
+                    <label>Country</label>
+                    <select
+                      name="country"
+                      value={formData.country}
+                      onChange={handleInputChange}
+                      required
+                    >
+                      <option value="">Select Country</option>
+                      {getNames().map((country) => (
+                        <option key={country} value={country}>
+                          {country}
+                        </option>
+                      ))}
+                    </select>
+                    {errors.country && <div className="form-error">{errors.country}</div>}
+                  </div>
 
                   {errors.submit && <div className="form-error">{errors.submit}</div>}
                 </form>
