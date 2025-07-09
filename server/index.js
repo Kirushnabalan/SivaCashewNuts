@@ -23,10 +23,7 @@ const PORT = process.env.PORT || 5000;
 // CORS Setup
 const allowedOrigins = [
   process.env.CORS_ORIGIN, // https://siva-cashew-nuts.vercel.app
-  "http://localhost:5173",
-  "http://localhost:5174",
   "https://siva-cashew-nuts.vercel.app",
-  "https://sivacashewnuts2.vercel.app"
 ];
 
 app.use(cors({
