@@ -79,10 +79,12 @@ const handleSubmit = async (e) => {
     customer: formData,
     items: cart,
     totalAmount: total,
-    orderDate: new Date().toISOString(), // optional but recommended
+    orderDate: new Date().toISOString(),
   };
 
   try {
+    console.log('Sending order data:', orderData);
+    
     const res = await fetch(`${API_BASE_URL}/orders`, {
       method: "POST",
       headers: {
@@ -91,15 +93,69 @@ const handleSubmit = async (e) => {
       body: JSON.stringify(orderData),
     });
 
-    const data = await res.json();
+    console.log('Response status:', res.status);
+    console.log('Response headers:', res.headers);
 
-    if (!res.ok) throw new Error(data.message || "Order failed");
+    // Get response text first to handle empty responses
+    const responseText = await res.text();
+    console.log('Response text:', responseText);
 
-    clearCart();
-    navigate(ROUTES.SUCCESS);
+    // Check if response is ok
+    if (!res.ok) {
+      let errorMessage = `HTTP ${res.status}: ${res.statusText}`;
+      
+      if (responseText.trim()) {
+        try {
+          const errorData = JSON.parse(responseText);
+          errorMessage = errorData.message || errorMessage;
+        } catch {
+          errorMessage = responseText;
+        }
+      }
+      
+      throw new Error(errorMessage);
+    }
+
+    // Handle empty response (which might be success)
+    if (!responseText.trim()) {
+      console.log('Empty response received, assuming success');
+      clearCart();
+      navigate(ROUTES.SUCCESS);
+      return;
+    }
+
+    // Try to parse JSON response
+    let data;
+    try {
+      data = JSON.parse(responseText);
+    } catch (parseError) {
+      console.error('Failed to parse JSON response:', responseText);
+      console.error('Parse error:', parseError);
+      
+      // If status is ok but can't parse JSON, still consider it successful
+      if (res.status >= 200 && res.status < 300) {
+        clearCart();
+        navigate(ROUTES.SUCCESS);
+        return;
+      }
+      
+      throw new Error('Invalid response from server');
+    }
+
+    // Check if the response indicates success
+    if (data.success !== false) {
+      console.log('Order successful:', data);
+      clearCart();
+      navigate(ROUTES.SUCCESS);
+    } else {
+      throw new Error(data.message || 'Order failed');
+    }
+
   } catch (error) {
     console.error("Checkout error:", error);
-    setErrors({ submit: error.message });
+    setErrors({ 
+      submit: error.message || "Order failed. Please try again." 
+    });
   } finally {
     setLoading(false);
   }
