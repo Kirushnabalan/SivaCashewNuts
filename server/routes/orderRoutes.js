@@ -1,18 +1,16 @@
-// server/routes/orderRoutes.js
 import express from 'express';
 import { sendOrderConfirmationEmail } from '../controllers/orderController.js';
 
 const router = express.Router();
 
-// Middleware to log all requests to this route
+// Middleware for logging
 router.use((req, res, next) => {
   console.log(`Orders route: ${req.method} ${req.originalUrl}`);
   next();
 });
 
-// GET /api/orders - Test endpoint
+// GET /api/orders
 router.get('/', (req, res) => {
-  console.log('GET /api/orders called');
   res.json({ 
     success: true, 
     message: 'Orders endpoint is working',
@@ -21,16 +19,12 @@ router.get('/', (req, res) => {
   });
 });
 
-// POST /api/orders - Create new order
+// POST /api/orders
 router.post('/', async (req, res) => {
-  console.log('POST /api/orders called');
-  console.log('Request body:', req.body);
-  
   try {
     await sendOrderConfirmationEmail(req, res);
   } catch (error) {
     console.error('Route error:', error);
-    
     if (!res.headersSent) {
       res.status(500).json({ 
         success: false, 
@@ -39,15 +33,6 @@ router.post('/', async (req, res) => {
       });
     }
   }
-});
-
-// OPTIONS /api/orders - Handle preflight requests
-router.options('/', (req, res) => {
-  console.log('OPTIONS /api/orders called');
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  res.sendStatus(200);
 });
 
 export default router;
