@@ -1,82 +1,63 @@
+// controllers/orderController.js
 import { createEmailTransporter, emailTemplates } from '../utils/email.js';
 
 export const sendOrderConfirmationEmail = async (req, res) => {
   try {
     const { customer, items, totalAmount, orderDate } = req.body;
 
-    // Validate input
+    // Validation
     if (!customer || !items || !totalAmount) {
       return res.status(400).json({ success: false, message: 'Missing order details' });
     }
 
-    if (!customer.firstName || !customer.lastName || !customer.email) {
-      return res.status(400).json({ success: false, message: 'Missing customer information' });
-    }
-
-    if (!Array.isArray(items) || items.length === 0) {
-      return res.status(400).json({ success: false, message: 'Cart items are required' });
-    }
-
-    // Prepare order object
+    // Order object
     const order = {
       id: Date.now().toString(),
       customer,
       items,
       totalAmount,
       orderDate: orderDate || new Date().toISOString(),
-      status: 'pending',
-      createdAt: new Date().toISOString()
     };
 
-    console.log('🛒 Processing order:', order);
-
-    // Send confirmation email
+    // Send email
     try {
       const transporter = createEmailTransporter();
+      const emailContent = emailTemplates.orderConfirmation({ ...order });
 
-      const emailTemplate = emailTemplates.orderConfirmation({ customer, items, totalAmount });
-      if (!emailTemplate || !emailTemplate.subject || !emailTemplate.html) {
-        throw new Error('Invalid email template');
-      }
-
-      const mailOptions = {
+      await transporter.sendMail({
         from: `"Siva Cashew Nuts" <${process.env.MAIL_USER}>`,
-        to: process.env.MAIL_USER, // You can change this to `customer.email` if sending to user
-        subject: emailTemplate.subject,
-        html: emailTemplate.html
-      };
+        to: process.env.MAIL_USER,
+        subject: emailContent.subject,
+        html: emailContent.html,
+      });
 
-      await transporter.sendMail(mailOptions);
-      console.log('✅ Order confirmation email sent');
-    } catch (emailError) {
-      console.error('❌ Email sending failed:', emailError);
-      // You may still proceed with order even if email fails
+      console.log('✅ Order email sent');
+    } catch (e) {
+      console.error('❌ Failed to send email:', e);
     }
 
-    // Respond to client
+    // Success response
     res.status(201).json({
       success: true,
       message: 'Order placed successfully',
       order: {
         id: order.id,
-        status: order.status,
+        status: 'pending',
         totalAmount: order.totalAmount,
         customer: {
           firstName: customer.firstName,
           lastName: customer.lastName,
-          email: customer.email
+          email: customer.email,
         }
       }
     });
 
-  } catch (error) {
-    console.error('🔥 Order processing error:', error);
+  } catch (err) {
+    console.error('🔥 Order Error:', err);
     res.status(500).json({
       success: false,
-      message: 'Failed to process order. Please try again.',
-      error: error.message
+      message: 'Failed to process order',
+      error: err.message,
     });
   }
 };
-  
-
